@@ -5,12 +5,6 @@ import telebot
 
 bot = telebot.TeleBot(token)
 keyboard = telebot.types.ReplyKeyboardMarkup()
-try:
-    os.listdir('files')
-except Exception as E:
-    print(E)
-else:    
-    os.mkdir('files')
 
 temp_subject = ''
 
