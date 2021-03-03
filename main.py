@@ -8,6 +8,8 @@ import asyncio
 bot = telebot.TeleBot(token)
 keyboard = telebot.types.ReplyKeyboardMarkup()
 needtime = ''
+need_to_send = False
+Gmessage = ''
 
 temp_subject = ''
 
@@ -119,25 +121,31 @@ def set_timer2(message):
 
 
 def set_timer3(message):
-    global temp_subject, needtime
+    global temp_subject, needtime, need_to_send, Gmessage
     
     time = [int(i) for i in message.text.split(':')]
     time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
     needtime = datetime.datetime.now() + time
     print(needtime, temp_subject)
 
+    if f'{temp_subject}.txt' not in os.listdir('files'):
+        bot.send_message(message.chat.id, 'Данного предмета нет в списке')
+        return 0
     with open(f'files/{temp_subject}.txt', mode='r') as file:
         text = file.read()
 
-    timer(message, 5, text)
+    Gmessage = [message, text]
+    need_to_send = True
 
 
-async def timer(message, wait_for, text):
+async def timer(wait_for):
     while True:
+        global need_to_send, Gmessage
         await asyncio.sleep(wait_for)
 
-        if datetime.time.now() >= needtime:
-            bot.send_message(message.chat_id, text)
+        if datetime.time.now() >= needtime and need_to_send:
+            bot.send_message(*Gmessage)
+            need_to_send = False
 
 
 @bot.message_handler(func=lambda message: True)
@@ -145,5 +153,5 @@ def messages(message):
     bot.send_message(message.chat.id, message.text)
     print(f'{message.chat.username}: {message.text}')
 
-
+timer(5)
 bot.polling()
