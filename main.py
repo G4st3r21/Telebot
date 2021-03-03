@@ -1,10 +1,13 @@
 from Token import token
 import os
 import telebot
+import datetime
+import asyncio
 #import . from Rewrite_api
 
 bot = telebot.TeleBot(token)
 keyboard = telebot.types.ReplyKeyboardMarkup()
+needtime = ''
 
 temp_subject = ''
 
@@ -23,9 +26,7 @@ def new_subject1(message):
 
 def new_subject2(message):
     global temp_subject
-
     temp_subject = message.text
-
 
     if f'{temp_subject}.txt' in os.listdir('files'):
         bot.send_message(message.chat.id, 'Данный предмет уже есть')
@@ -43,8 +44,8 @@ def import_info1(message):
 
 def import_info2(message):
     global temp_subject
-
     temp_subject = message.text
+
     if f'{temp_subject}.txt' not in os.listdir('files'):
         bot.send_message(message.chat.id, 'Данного предмета нет в списке')
         return 0
@@ -53,8 +54,8 @@ def import_info2(message):
 
 def import_info3(message):
     global temp_subject
-
     text = message.text
+
     with open(f'files/{temp_subject}.txt', mode='w') as file:
         print(f'{text}', file=file)
 
@@ -68,6 +69,7 @@ def get_text1(message):
     bot.register_next_step_handler(message, get_text2)
 
 def get_text2(message):
+    global temp_subject
     temp_subject = message.text
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
@@ -84,7 +86,9 @@ def delete_subject1(message):
     bot.register_next_step_handler(message, delete_subject2)
 
 def delete_subject2(message):
+    global temp_subject
     temp_subject = message.text
+
     os.remove(f'files/{temp_subject}.txt')
     bot.send_message(message.chat.id, f'Предмет "{temp_subject}" успешно удален')
 
@@ -98,8 +102,37 @@ def messages(message):
     print(f'{message.chat.username}: {message.text}')
 
 
-# @bot.message_handler(commands=['set_timer'])
-# def set_timer(message):
+@bot.message_handler(commands=['set_timer'])
+def set_timer1(message):
+    bot.send_message(message.chat.id, 'Введите название предмета')
+    bot.register_next_step_handler(message, set_timer2)
+
+def set_timer2(message):
+    global temp_subject
+    temp_subject = message.text
+
+    bot.send_message(message.chat.id, 'Через какое время вам отправить сообщение? \n Вводите в формате чч:мм:cc')
+    bot.register_next_step_handler(message, set_timer3)
+
+def set_timer3(message):
+    global temp_subject, needtime
+
+    time = datetime.time(message.text.split(':'))
+    needtime = datetime.time.now() + time
+    subject = temp_subject
+    print(needtime, subject)
+
+    with open(f'files/{subject}.txt', mode='r') as file:
+        text = file.read()
+    
+    timer(message, 5, text)
+
+async def timer(message, wait_for, text):
+    while True:
+        await asyncio.sleep(wait_for)
+
+        if datetime.time.now() == needtime:
+            bot.send_message(message.chat_id, text)
 
 
 bot.polling()
