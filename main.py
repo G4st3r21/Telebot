@@ -137,7 +137,7 @@ async def timer(message, wait_for, text):
     while True:
         await asyncio.sleep(wait_for)
 
-        if datetime.time.now() == needtime:
+        if datetime.time.now() >= needtime:
             bot.send_message(message.chat_id, text)
 
 
