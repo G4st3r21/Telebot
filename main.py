@@ -1,7 +1,7 @@
 from Token import token
 import os
 import telebot
-from datetime import datetime, timedelta
+import datetime
 import asyncio
 # import . from Rewrite_api
 
@@ -122,7 +122,7 @@ def set_timer3(message):
     global temp_subject, needtime
     
     time = [int(i) for i in message.text.split(':')]
-    time = timedelta(hours=time[0], minutes=time[1], seconds=time[2])
+    time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
     needtime = datetime.datetime.now() + time
     subject = temp_subject
     print(needtime, subject)
