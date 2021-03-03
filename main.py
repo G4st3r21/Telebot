@@ -5,6 +5,12 @@ import telebot
 
 bot = telebot.TeleBot(token)
 keyboard = telebot.types.ReplyKeyboardMarkup()
+try:
+    os.listdir('files')
+except Exception as E:
+    print(E)
+else:    
+    os.mkdir('files')
 
 temp_subject = ''
 
@@ -25,6 +31,7 @@ def new_subject2(message):
     global temp_subject
 
     temp_subject = message.text
+
 
     if f'{temp_subject}.txt' in os.listdir('files'):
         bot.send_message(message.chat.id, 'Данный предмет уже есть')
