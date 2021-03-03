@@ -124,7 +124,7 @@ def set_timer3(message):
     time = [int(i) for i in message.text.split(':')]
     time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
     needtime = datetime.datetime.now() + time
-    print(needtime, subject)
+    print(needtime, temp_subject)
 
     with open(f'files/{temp_subject}.txt', mode='r') as file:
         text = file.read()
