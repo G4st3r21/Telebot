@@ -122,7 +122,7 @@ def set_timer3(message):
     global temp_subject, needtime
     time = [int(i) for i in message.text.split(':')]
     time = datetime.time(*time)
-    needtime = datetime.time.now() + time
+    needtime = datetime.datetime.now() + time
     subject = temp_subject
     print(needtime, subject)
 
