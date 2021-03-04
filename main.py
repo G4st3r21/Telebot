@@ -151,8 +151,8 @@ async def set_timer2(msg: aiogram.types.Message):
 async def set_timer3(msg: aiogram.types.Message):
     global temp_subject, needtime, need_to_send, Gmessage
 
-    time = [int(i) for i in msg.text.split(':')]
     try:
+        time = [int(i) for i in msg.text.split(':')]
         time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
         now = datetime.datetime.now()
         needtime = now + time
