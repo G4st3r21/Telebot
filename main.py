@@ -137,6 +137,11 @@ async def set_timer2(msg: aiogram.types.Message):
     global temp_subject
     temp_subject = msg.text
 
+    if f'{temp_subject}.txt' not in os.listdir('files'):
+        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
+        await state.reset_state()
+        return 0
+
     await bot.send_message(
         msg.from_user.id, 'Через какое время вам отправить сообщение? \n Вводите в формате чч:мм:cc')
     await state.set_state(RewriteStates.all()[6])
@@ -147,21 +152,22 @@ async def set_timer3(msg: aiogram.types.Message):
     global temp_subject, needtime, need_to_send, Gmessage
 
     time = [int(i) for i in msg.text.split(':')]
-    time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
-    now = datetime.datetime.now()
-    needtime = now + time
+    try:
+        time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
+        now = datetime.datetime.now()
+        needtime = now + time
+    except Exception:
+        await bot.send_message(msg.from_user.id, 'Ошибка: неверный формат, вводите в формате чч:мм:cc')
     print(type(now), type(time), type(needtime))
     print(needtime, temp_subject)
 
-    if f'{temp_subject}.txt' not in os.listdir('files'):
-        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
-        return 0
     with open(f'files/{temp_subject}.txt', mode='r') as file:
         text = file.read()
 
     Gmessage = [msg.from_user.id, text]
     need_to_send = True
 
+    await bot.send_message(msg.from_user.id, 'Хорошо, ожидайте)')
     await state.reset_state()
 
 
@@ -180,8 +186,6 @@ async def timer(wait_for):
             await bot.send_message(*Gmessage)
             print(*Gmessage)
             need_to_send = False
-        else:
-            print(datetime.datetime.now())
 
 
 async def shutdown(dispatcher: aiogram.Dispatcher):
