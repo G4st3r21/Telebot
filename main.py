@@ -1,157 +1,194 @@
-from Token import token
+from config import token
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from util import RewriteStates
 import os
-import telebot
+import aiogram
 import datetime
 import asyncio
-# import . from Rewrite_api
 
-bot = telebot.TeleBot(token)
-keyboard = telebot.types.ReplyKeyboardMarkup()
-needtime = ''
+bot = aiogram.Bot(token=token)
+dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
+dp.middleware.setup(LoggingMiddleware())
+loop = asyncio.get_event_loop()
+state = ''
+print(RewriteStates.all())
+needtime = datetime.datetime.now()
 need_to_send = False
 Gmessage = ''
 
 temp_subject = ''
 
 
-@bot.message_handler(commands=['start', 'help', 'hello'])
-def start_message(message):
-    bot.send_message(message.chat.id, 'Хай, пупсик')
+@dp.message_handler(commands=['start', 'help', 'hello'])
+async def start_message(msg: aiogram.types.Message):
+    global state
+    state = dp.current_state(user=msg.from_user.id)
+    await bot.send_message(msg.from_user.id, 'Хай, пупсик')
 
 #-------------------------------------------------------------------#
 
 
-@bot.message_handler(commands=['newclass'])
-def new_subject1(message):
-    bot.send_message(message.chat.id, 'Назовите предмет')
-    bot.register_next_step_handler(message, new_subject2)
+@dp.message_handler(commands=['newclass'])
+async def new_subject1(msg: aiogram.types.Message):
+    await bot.send_message(msg.from_user.id, 'Назовите предмет')
+    await state.set_state(RewriteStates.all()[4])
 
 
-def new_subject2(message):
+@dp.message_handler(state=RewriteStates.STATE_NEWCLASS)
+async def new_subject2(msg: aiogram.types.Message):
     global temp_subject
-    temp_subject = message.text
+    temp_subject = msg.text
 
     if f'{temp_subject}.txt' in os.listdir('files'):
-        bot.send_message(message.chat.id, 'Данный предмет уже есть')
+        await bot.send_message(msg.from_user.id, 'Данный предмет уже есть. Введите новый')
         return 0
     with open(f'files/{temp_subject}.txt', mode='w') as file:
         print('', file=file)
 
-    bot.send_message(
-        message.chat.id, f'Предмет "{temp_subject}" добавлен в список')
+    await bot.send_message(
+        msg.from_user.id, f'Предмет "{temp_subject}" добавлен в список')
+
+    await state.reset_state()
 
 
-@bot.message_handler(commands=['im_text'])
-def import_info1(message):
-    bot.send_message(message.chat.id, 'Назовите предмет')
-    bot.register_next_step_handler(message, import_info2)
+@dp.message_handler(commands=['im_text'])
+async def import_info1(msg: aiogram.types.Message):
+    await bot.send_message(msg.from_user.id, 'Назовите предмет')
+    await state.set_state(RewriteStates.all()[2])
 
 
-def import_info2(message):
+@dp.message_handler(state=RewriteStates.STATE_IM_TEXT1)
+async def import_info2(msg: aiogram.types.Message):
     global temp_subject
-    temp_subject = message.text
+    temp_subject = msg.text
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        bot.send_message(message.chat.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
         return 0
-    bot.send_message(message.chat.id, 'Введите текст для шпоры')
-    bot.register_next_step_handler(message, import_info3)
+    await bot.send_message(msg.from_user.id, 'Введите текст для шпоры')
+    await state.set_state(RewriteStates.all()[3])
 
 
-def import_info3(message):
+@dp.message_handler(state=RewriteStates.STATE_IM_TEXT2)
+async def import_info3(msg: aiogram.types.Message):
     global temp_subject
-    text = message.text
+    text = msg.text
 
     with open(f'files/{temp_subject}.txt', mode='w') as file:
         print(f'{text}', file=file)
 
-    bot.send_message(message.chat.id, f'Текст сохранен в "{temp_subject}"')
+    await bot.send_message(msg.from_user.id, f'Текст сохранен в "{temp_subject}"')
+
+    await state.reset_state()
 
 
-@bot.message_handler(commands=['get_text'])
-def get_text1(message):
-    bot.send_message(message.chat.id, 'Введите название предмета')
-    bot.register_next_step_handler(message, get_text2)
+@dp.message_handler(commands=['get_text'])
+async def get_text1(msg: aiogram.types.Message):
+    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await state.set_state(RewriteStates.all()[1])
 
 
-def get_text2(message):
+@dp.message_handler(state=RewriteStates.STATE_GET_TEXT)
+async def get_text2(msg: aiogram.types.Message):
     global temp_subject
-    temp_subject = message.text
+    temp_subject = msg.text
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        bot.send_message(message.chat.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
         return 0
     with open(f'files/{temp_subject}.txt', mode='r') as file:
         text = file.read()
 
-    bot.send_message(message.chat.id, text)
+    await bot.send_message(msg.from_user.id, text)
+
+    await state.reset_state()
 
 
-@bot.message_handler(commands=['delete'])
-def delete_subject1(message):
-    bot.send_message(message.chat.id, 'Введите название предмета')
-    bot.register_next_step_handler(message, delete_subject2)
+@dp.message_handler(commands=['delete'])
+async def delete_subject1(msg: aiogram.types.Message):
+    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await state.set_state(RewriteStates.all()[0])
 
 
-def delete_subject2(message):
+@dp.message_handler(state=RewriteStates.STATE_DELETE)
+async def delete_subject2(msg: aiogram.types.Message):
     global temp_subject
-    temp_subject = message.text
+    temp_subject = msg.text
 
     os.remove(f'files/{temp_subject}.txt')
-    bot.send_message(
-        message.chat.id, f'Предмет "{temp_subject}" успешно удален')
+    await bot.send_message(
+        msg.from_user.id, f'Предмет "{temp_subject}" успешно удален')
+
+    await state.reset_state()
 
 
 #-------------------------------------------------------------------#
 
 
-@bot.message_handler(commands=['set_timer'])
-def set_timer1(message):
-    bot.send_message(message.chat.id, 'Введите название предмета')
-    bot.register_next_step_handler(message, set_timer2)
+@dp.message_handler(commands=['set_timer'])
+async def set_timer1(msg: aiogram.types.Message):
+    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await state.set_state(RewriteStates.all()[5])
 
 
-def set_timer2(message):
+@dp.message_handler(state=RewriteStates.STATE_SET_TIMER1)
+async def set_timer2(msg: aiogram.types.Message):
     global temp_subject
-    temp_subject = message.text
+    temp_subject = msg.text
 
-    bot.send_message(
-        message.chat.id, 'Через какое время вам отправить сообщение? \n Вводите в формате чч:мм:cc')
-    bot.register_next_step_handler(message, set_timer3)
+    await bot.send_message(
+        msg.from_user.id, 'Через какое время вам отправить сообщение? \n Вводите в формате чч:мм:cc')
+    await state.set_state(RewriteStates.all()[6])
 
 
-def set_timer3(message):
+@dp.message_handler(state=RewriteStates.STATE_SET_TIMER2)
+async def set_timer3(msg: aiogram.types.Message):
     global temp_subject, needtime, need_to_send, Gmessage
-    
-    time = [int(i) for i in message.text.split(':')]
+
+    time = [int(i) for i in msg.text.split(':')]
     time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
-    needtime = datetime.datetime.now() + time
+    now = datetime.datetime.now()
+    needtime = now + time
+    print(type(now), type(time), type(needtime))
     print(needtime, temp_subject)
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        bot.send_message(message.chat.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
         return 0
     with open(f'files/{temp_subject}.txt', mode='r') as file:
         text = file.read()
 
-    Gmessage = [message, text]
+    Gmessage = [msg.from_user.id, text]
     need_to_send = True
+
+    await state.reset_state()
+
+
+@dp.message_handler()
+async def echo_message(msg: aiogram.types.Message):
+    global state
+    state = dp.current_state(user=msg.from_user.id)
+    await bot.send_message(msg.from_user.id, msg.text)
 
 
 async def timer(wait_for):
+    global need_to_send, needtime, Gmessage
     while True:
-        global need_to_send, Gmessage
         await asyncio.sleep(wait_for)
-
-        if datetime.time.now() >= needtime and need_to_send:
-            bot.send_message(*Gmessage)
+        if datetime.datetime.now() >= needtime and need_to_send:
+            await bot.send_message(*Gmessage)
+            print(*Gmessage)
             need_to_send = False
+        else:
+            print(datetime.datetime.now())
 
 
-@bot.message_handler(func=lambda message: True)
-def messages(message):
-    bot.send_message(message.chat.id, message.text)
-    print(f'{message.chat.username}: {message.text}')
+async def shutdown(dispatcher: aiogram.Dispatcher):
+    await dispatcher.storage.close()
+    await dispatcher.storage.wait_closed()
 
-timer(5)
-bot.polling()
+
+if __name__ == "__main__":
+    loop.create_task(timer(5))
+    aiogram.executor.start_polling(dp, on_shutdown=shutdown)
