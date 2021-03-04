@@ -1,4 +1,5 @@
 from config import token
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from util import RewriteStates
 import os
