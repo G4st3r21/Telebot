@@ -6,25 +6,33 @@ import os
 import aiogram
 import datetime
 import asyncio
+import Sticers
+
+
+# ----------------------bot init------------------------ #
 
 bot = aiogram.Bot(token=token)
 dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 loop = asyncio.get_event_loop()
+
+# --------------------other params----------------------- #
+
 state = ''
 print(RewriteStates.all())
 needtime = datetime.datetime.now()
 need_to_send = False
 Gmessage = ''
-
 temp_subject = ''
 
+# -------------------------------------------------------- #
 
-@dp.message_handler(commands=['start', 'help', 'hello'])
+@dp.message_handler(commands=['start', 'hello'])
 async def start_message(msg: aiogram.types.Message):
     global state
     state = dp.current_state(user=msg.from_user.id)
-    await bot.send_message(msg.from_user.id, 'Хай, пупсик')
+    await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
+    await bot.send_sticker(msg.from_user.id, Sticers.def_morshu)
 
 #-------------------------------------------------------------------#
 
@@ -172,10 +180,11 @@ async def set_timer3(msg: aiogram.types.Message):
 
 
 @dp.message_handler()
-async def echo_message(msg: aiogram.types.Message):
+async def def_message(msg: aiogram.types.Message):
     global state
     state = dp.current_state(user=msg.from_user.id)
-    await bot.send_message(msg.from_user.id, msg.text)
+    await bot.send_sticker(msg.from_user.id, Sticers.excausted_morshu)
+    await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
 
 
 async def timer(wait_for):

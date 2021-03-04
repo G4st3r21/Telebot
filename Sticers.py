@@ -1,0 +1,2 @@
+def_morshu = 'CAACAgIAAxkBAALsmmBBQcegHCnVZ15sileT44kVXaP7AAIcAAMMpQ4usHzsfdDL3YMeBA'
+excausted_morshu = 'CAACAgIAAxkBAALsnWBBQg1p39ODUflOjO4icKlTK8tNAAIgAAMMpQ4uQUbHn2wyMYoeBA'
