@@ -33,6 +33,7 @@ async def start_message(msg: aiogram.types.Message):
     state = dp.current_state(user=msg.from_user.id)
     await bot.send_sticker(msg.from_user.id, Sticers.def_morshu)
     await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
+    print(f'{msg.from_user.username}: /hello')
 
 @dp.message_handler(commands=['help'])
 async def help_message(msg: aiogram.types.Message):
@@ -40,6 +41,7 @@ async def help_message(msg: aiogram.types.Message):
         text = file.read()
     await bot.send_sticker(msg.from_user.id, Sticers.help_morshu)
     await bot.send_message(msg.from_user.id, text)
+    print(f'{msg.from_user.username}: /help')
 
 #-------------------------------------------------------------------#
 
@@ -48,6 +50,7 @@ async def help_message(msg: aiogram.types.Message):
 async def new_subject1(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Назовите предмет')
     await state.set_state(RewriteStates.all()[4])
+    print(f'{msg.from_user.username}: /newclass')
 
 
 @dp.message_handler(state=RewriteStates.STATE_NEWCLASS)
@@ -63,14 +66,18 @@ async def new_subject2(msg: aiogram.types.Message):
 
     await bot.send_message(
         msg.from_user.id, f'Предмет "{temp_subject}" добавлен в список')
+    
+    print(os.listdir('files/'))
 
     await state.reset_state()
+    print(f'{msg.from_user.username}: создал хранилище "{temp_subject}"')
 
 
 @dp.message_handler(commands=['im_text'])
 async def import_info1(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Назовите предмет')
     await state.set_state(RewriteStates.all()[2])
+    print(f'{msg.from_user.username}: /im_text')
 
 
 @dp.message_handler(state=RewriteStates.STATE_IM_TEXT1)
@@ -102,12 +109,14 @@ async def import_info3(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, f'Текст сохранен в "{temp_subject}"')
 
     await state.reset_state()
+    print(f'{msg.from_user.username}: изменил информацию в {temp_subject}')
 
 
 @dp.message_handler(commands=['get_text'])
 async def get_text1(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Введите название предмета')
     await state.set_state(RewriteStates.all()[1])
+    print(f'{msg.from_user.username}: /get_text')
 
 
 @dp.message_handler(state=RewriteStates.STATE_GET_TEXT)
@@ -124,12 +133,14 @@ async def get_text2(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, text)
 
     await state.reset_state()
+    print(f'{msg.from_user.username}: получил текст из "{temp_subject}"')
 
 
 @dp.message_handler(commands=['delete'])
 async def delete_subject1(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Введите название предмета')
     await state.set_state(RewriteStates.all()[0])
+    print(f'{msg.from_user.username}: /delete')
 
 
 @dp.message_handler(state=RewriteStates.STATE_DELETE)
@@ -146,6 +157,9 @@ async def delete_subject2(msg: aiogram.types.Message):
     os.remove(f'files/{temp_subject}.txt')
     await bot.send_message(
         msg.from_user.id, f'Предмет "{temp_subject}" успешно удален')
+    
+    print(os.listdir('files/'))
+    print(f'{msg.from_user.username}: удалил хранилище {temp_subject}')
 
     await state.reset_state()
 
@@ -157,6 +171,7 @@ async def delete_subject2(msg: aiogram.types.Message):
 async def set_timer1(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Введите название предмета')
     await state.set_state(RewriteStates.all()[5])
+    print(f'{msg.from_user.username}: /set_timer')
 
 
 @dp.message_handler(state=RewriteStates.STATE_SET_TIMER1)
@@ -170,7 +185,7 @@ async def set_timer2(msg: aiogram.types.Message):
         return 0
 
     await bot.send_message(
-        msg.from_user.id, 'Через какое время вам отправить сообщение? \n Вводите в формате чч:мм:cc')
+        msg.from_user.id, 'Через какое время вам отправить сообщение?\nВводите в формате чч:мм:cc')
     await state.set_state(RewriteStates.all()[6])
 
 
@@ -195,6 +210,7 @@ async def set_timer3(msg: aiogram.types.Message):
     need_to_send = True
 
     await bot.send_message(msg.from_user.id, 'Хорошо, ожидайте)')
+    print(f'{msg.from_user.username}: запустил таймер')
     await state.reset_state()
 
 
@@ -204,6 +220,7 @@ async def def_message(msg: aiogram.types.Message):
     state = dp.current_state(user=msg.from_user.id)
     await bot.send_sticker(msg.from_user.id, Sticers.excausted_morshu)
     await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
+    print(f'{msg.from_user.username}: {msg.text}')
 
 
 async def timer(wait_for):
