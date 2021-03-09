@@ -2,7 +2,7 @@ from config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from util import RewriteStates
-from news import NewsFrom_MigNewsCom
+from news import NewsFrom_MigNewsCom, Check_for_new_post
 import os
 import aiogram
 from datetime import datetime as dt
@@ -250,6 +250,10 @@ async def timer(wait_for):
             news = NewsFrom_MigNewsCom(5)
             await bot.send_message(founder_id, '\n\n'.join(news))
             morning_message_was = True
+        
+        new_post = Check_for_new_post()
+        if new_post:
+            await bot.send_message(founder_id, new_post, parse_mode='HTML')
 
 async def shutdown(dispatcher: aiogram.Dispatcher):
     await dispatcher.storage.close()
