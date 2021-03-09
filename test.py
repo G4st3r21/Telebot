@@ -1,10 +1,3 @@
-import asyncio
+from datetime import datetime as dt
 
-
-async def main():
-        await asyncio.sleep(5)
-        print('hello')
-
-asyncio.run(main())
-
-print('world')
+print(str(dt.now())[11:13])

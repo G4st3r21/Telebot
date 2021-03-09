@@ -1,11 +1,11 @@
-from config import token
+from config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from util import RewriteStates
 from news import NewsFrom_MigNewsCom
 import os
 import aiogram
-import datetime
+from datetime import datetime as dt
 import asyncio
 import Sticers
 
@@ -21,10 +21,11 @@ loop = asyncio.get_event_loop()
 
 state = ''
 print(RewriteStates.all())
-needtime = datetime.datetime.now()
+needtime = dt.now()
 need_to_send = False
 Gmessage = ''
 temp_subject = ''
+morning_message_was = False
 
 # ----------------------Стартовые сообщения------------------------ #
 
@@ -195,9 +196,9 @@ async def set_timer3(msg: aiogram.types.Message):
 
     try:
         time = [int(i) for i in msg.text.split(':')]
-        time = datetime.timedelta(
+        time = dt.timedelta(
             hours=time[0], minutes=time[1], seconds=time[2])
-        now = datetime.datetime.now()
+        now = dt.now()
         needtime = now + time
     except Exception:
         await bot.send_message(msg.from_user.id, 'Ошибка: неверный формат, вводите в формате чч:мм:cc')
@@ -220,7 +221,7 @@ async def set_timer3(msg: aiogram.types.Message):
 @dp.message_handler(commands=['news'])
 async def news_every_day(msg: aiogram.types.Message):
     data = NewsFrom_MigNewsCom(7)
-    await bot.send_message(msg.from_user.id, '\n\n'.join(data))
+    await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
 
 #-----------------------------Разное--------------------------------#
@@ -236,14 +237,19 @@ async def def_message(msg: aiogram.types.Message):
 
 
 async def timer(wait_for):
-    global need_to_send, needtime, Gmessage
+    global need_to_send, needtime, Gmessage, morning_message_was
     while True:
         await asyncio.sleep(wait_for)
-        if datetime.datetime.now() >= needtime and need_to_send:
+        if dt.now() >= needtime and need_to_send:
             await bot.send_message(*Gmessage)
             print(*Gmessage)
             need_to_send = False
 
+        if str(dt.now())[11:16] == '07:20' and not morning_message_was:
+            await bot.send_sticker(founder_id, Sticers.def_morshu)
+            news = NewsFrom_MigNewsCom(5)
+            await bot.send_message(founder_id, '\n\n'.join(news))
+            morning_message_was = True
 
 async def shutdown(dispatcher: aiogram.Dispatcher):
     await dispatcher.storage.close()
