@@ -245,7 +245,7 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        if str(dt.now())[11:16] == '07:20' and not morning_message_was:
+        if str(dt.now())[11:16] == '04:20' and not morning_message_was:
             await bot.send_sticker(founder_id, Sticers.def_morshu)
             news = NewsFrom_MigNewsCom(5)
             await bot.send_message(founder_id, '\n\n'.join(news))
