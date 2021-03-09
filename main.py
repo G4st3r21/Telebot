@@ -20,12 +20,12 @@ loop = asyncio.get_event_loop()
 # --------------------other params----------------------- #
 
 state = ''
-print(RewriteStates.all())
 needtime = dt.now()
 need_to_send = False
 Gmessage = ''
 temp_subject = ''
 morning_message_was = False
+print('Бот запущен')
 
 # ----------------------Стартовые сообщения------------------------ #
 
