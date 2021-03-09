@@ -2,6 +2,7 @@ from config import token
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from util import RewriteStates
+from news import NewsFrom_MigNewsCom
 import os
 import aiogram
 import datetime
@@ -25,7 +26,8 @@ need_to_send = False
 Gmessage = ''
 temp_subject = ''
 
-# -------------------------------------------------------- #
+# ----------------------Стартовые сообщения------------------------ #
+
 
 @dp.message_handler(commands=['start', 'hello'])
 async def start_message(msg: aiogram.types.Message):
@@ -35,20 +37,21 @@ async def start_message(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
     print(f'{msg.from_user.username}: /hello')
 
+
 @dp.message_handler(commands=['help'])
 async def help_message(msg: aiogram.types.Message):
-    with open(f'files/HELP.txt', mode='r', encoding='utf-8') as file:    
+    with open(f'files/HELP.txt', mode='r', encoding='utf-8') as file:
         text = file.read()
     await bot.send_sticker(msg.from_user.id, Sticers.help_morshu)
     await bot.send_message(msg.from_user.id, text)
     print(f'{msg.from_user.username}: /help')
 
-#-------------------------------------------------------------------#
+#------------------------Работа с информацией------------------------#
 
 
 @dp.message_handler(commands=['newclass'])
 async def new_subject1(msg: aiogram.types.Message):
-    await bot.send_message(msg.from_user.id, 'Назовите предмет')
+    await bot.send_message(msg.from_user.id, 'Назовите новое хранилище')
     await state.set_state(RewriteStates.all()[4])
     print(f'{msg.from_user.username}: /newclass')
 
@@ -59,14 +62,14 @@ async def new_subject2(msg: aiogram.types.Message):
     temp_subject = msg.text
 
     if f'{temp_subject}.txt' in os.listdir('files'):
-        await bot.send_message(msg.from_user.id, 'Данный предмет уже есть. Введите новый')
+        await bot.send_message(msg.from_user.id, 'Данное хранилище уже есть. Введите новое')
         return 0
     with open(f'files/{temp_subject}.txt', mode='w') as file:
         print('', file=file)
 
     await bot.send_message(
-        msg.from_user.id, f'Предмет "{temp_subject}" добавлен в список')
-    
+        msg.from_user.id, f'Хранилище "{temp_subject}" создано')
+
     print(os.listdir('files/'))
 
     await state.reset_state()
@@ -75,7 +78,7 @@ async def new_subject2(msg: aiogram.types.Message):
 
 @dp.message_handler(commands=['im_text'])
 async def import_info1(msg: aiogram.types.Message):
-    await bot.send_message(msg.from_user.id, 'Назовите предмет')
+    await bot.send_message(msg.from_user.id, 'Назовите хранилище')
     await state.set_state(RewriteStates.all()[2])
     print(f'{msg.from_user.username}: /im_text')
 
@@ -92,9 +95,9 @@ async def import_info2(msg: aiogram.types.Message):
         return 0
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного хранилища нет в списке')
         return 0
-    await bot.send_message(msg.from_user.id, 'Введите текст для шпоры')
+    await bot.send_message(msg.from_user.id, 'Введите текст для хранилища')
     await state.set_state(RewriteStates.all()[3])
 
 
@@ -114,7 +117,7 @@ async def import_info3(msg: aiogram.types.Message):
 
 @dp.message_handler(commands=['get_text'])
 async def get_text1(msg: aiogram.types.Message):
-    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await bot.send_message(msg.from_user.id, 'Введите название хранилища')
     await state.set_state(RewriteStates.all()[1])
     print(f'{msg.from_user.username}: /get_text')
 
@@ -125,7 +128,7 @@ async def get_text2(msg: aiogram.types.Message):
     temp_subject = msg.text
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного хранилища нет в списке')
         return 0
     with open(f'files/{temp_subject}.txt', mode='r', encoding='utf-8') as file:
         text = file.read()
@@ -138,7 +141,7 @@ async def get_text2(msg: aiogram.types.Message):
 
 @dp.message_handler(commands=['delete'])
 async def delete_subject1(msg: aiogram.types.Message):
-    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await bot.send_message(msg.from_user.id, 'Введите название хранилища')
     await state.set_state(RewriteStates.all()[0])
     print(f'{msg.from_user.username}: /delete')
 
@@ -153,23 +156,20 @@ async def delete_subject2(msg: aiogram.types.Message):
             msg.from_user.id, 'НЕВОЗМОЖНО')
         await state.reset_state()
         return 0
-    
+
     os.remove(f'files/{temp_subject}.txt')
     await bot.send_message(
-        msg.from_user.id, f'Предмет "{temp_subject}" успешно удален')
-    
+        msg.from_user.id, f'Хранилище "{temp_subject}" успешно удалено')
+
     print(os.listdir('files/'))
     print(f'{msg.from_user.username}: удалил хранилище {temp_subject}')
 
     await state.reset_state()
 
 
-#-------------------------------------------------------------------#
-
-
 @dp.message_handler(commands=['set_timer'])
 async def set_timer1(msg: aiogram.types.Message):
-    await bot.send_message(msg.from_user.id, 'Введите название предмета')
+    await bot.send_message(msg.from_user.id, 'Введите название хранилища')
     await state.set_state(RewriteStates.all()[5])
     print(f'{msg.from_user.username}: /set_timer')
 
@@ -180,12 +180,12 @@ async def set_timer2(msg: aiogram.types.Message):
     temp_subject = msg.text
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
-        await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
+        await bot.send_message(msg.from_user.id, 'Данного хранилища нет в списке')
         await state.reset_state()
         return 0
 
     await bot.send_message(
-        msg.from_user.id, 'Через какое время вам отправить сообщение?\nВводите в формате чч:мм:cc')
+        msg.from_user.id, 'Через какое время вам отправить текст?\nВводите в формате чч:мм:cc')
     await state.set_state(RewriteStates.all()[6])
 
 
@@ -195,7 +195,8 @@ async def set_timer3(msg: aiogram.types.Message):
 
     try:
         time = [int(i) for i in msg.text.split(':')]
-        time = datetime.timedelta(hours=time[0], minutes=time[1], seconds=time[2])
+        time = datetime.timedelta(
+            hours=time[0], minutes=time[1], seconds=time[2])
         now = datetime.datetime.now()
         needtime = now + time
     except Exception:
@@ -212,6 +213,17 @@ async def set_timer3(msg: aiogram.types.Message):
     await bot.send_message(msg.from_user.id, 'Хорошо, ожидайте)')
     print(f'{msg.from_user.username}: запустил таймер')
     await state.reset_state()
+
+
+#--------------------------Новости на каждое утро----------------------------#
+
+@dp.message_handler(commands=['news'])
+async def news_every_day(msg: aiogram.types.Message):
+    data = NewsFrom_MigNewsCom(7)
+    await bot.send_message(msg.from_user.id, '\n\n'.join(data))
+
+
+#-----------------------------Разное--------------------------------#
 
 
 @dp.message_handler()
