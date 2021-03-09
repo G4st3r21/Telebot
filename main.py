@@ -127,7 +127,7 @@ async def get_text2(msg: aiogram.types.Message):
     if f'{temp_subject}.txt' not in os.listdir('files'):
         await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
         return 0
-    with open(f'files/{temp_subject}.txt', mode='r') as file:
+    with open(f'files/{temp_subject}.txt', mode='r', encoding='utf-8') as file:
         text = file.read()
 
     await bot.send_message(msg.from_user.id, text)
@@ -203,7 +203,7 @@ async def set_timer3(msg: aiogram.types.Message):
     print(type(now), type(time), type(needtime))
     print(needtime, temp_subject)
 
-    with open(f'files/{temp_subject}.txt', mode='r') as file:
+    with open(f'files/{temp_subject}.txt', mode='r', encoding='utf-8') as file:
         text = file.read()
 
     Gmessage = [msg.from_user.id, text]
