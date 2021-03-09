@@ -31,8 +31,15 @@ temp_subject = ''
 async def start_message(msg: aiogram.types.Message):
     global state
     state = dp.current_state(user=msg.from_user.id)
-    await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
     await bot.send_sticker(msg.from_user.id, Sticers.def_morshu)
+    await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
+
+@dp.message_handler(commands=['help'])
+async def help_message(msg: aiogram.types.Message):
+    with open(f'files/HELP.txt', mode='r', encoding='utf-8') as file:    
+        text = file.read()
+    await bot.send_sticker(msg.from_user.id, Sticers.help_morshu)
+    await bot.send_message(msg.from_user.id, text)
 
 #-------------------------------------------------------------------#
 
@@ -70,6 +77,12 @@ async def import_info1(msg: aiogram.types.Message):
 async def import_info2(msg: aiogram.types.Message):
     global temp_subject
     temp_subject = msg.text
+
+    if temp_subject == 'HELP':
+        await bot.send_message(
+            msg.from_user.id, 'НЕВОЗМОЖНО')
+        await state.reset_state()
+        return 0
 
     if f'{temp_subject}.txt' not in os.listdir('files'):
         await bot.send_message(msg.from_user.id, 'Данного предмета нет в списке')
@@ -124,6 +137,12 @@ async def delete_subject2(msg: aiogram.types.Message):
     global temp_subject
     temp_subject = msg.text
 
+    if temp_subject == 'HELP':
+        await bot.send_message(
+            msg.from_user.id, 'НЕВОЗМОЖНО')
+        await state.reset_state()
+        return 0
+    
     os.remove(f'files/{temp_subject}.txt')
     await bot.send_message(
         msg.from_user.id, f'Предмет "{temp_subject}" успешно удален')
