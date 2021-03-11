@@ -30,9 +30,9 @@ def Check_for_new_post():
 
     soup = BeautifulSoup(page.text, "html.parser")
 
-    if last_news != soup.findAll('span', class_='time2')[0]:
+    if last_news != soup.findAll('span', class_='time2 time3')[0]:
         link = soup.findAll('a', class_='lenta')[0]
         text = link.text
         link = 'http://mignews.com' + link.get('href')
-        last_news = soup.findAll('span', class_='time2')[0] 
+        last_news = soup.findAll('span', class_='time2 time3')[0] 
         return hlink(text, link)
