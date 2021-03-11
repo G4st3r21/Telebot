@@ -1,13 +1,14 @@
-from config import token, founder_id
+from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from util import RewriteStates
-from news import NewsFrom_MigNewsCom, Check_for_new_post
+from data.util import RewriteStates
+from data.news import NewsFrom_MigNewsCom, Check_for_new_post
+from data import Sticers
 import os
 import aiogram
 from datetime import datetime as dt
 import asyncio
-import Sticers
+from data import Sticers
 
 
 # ----------------------bot init------------------------ #
@@ -223,6 +224,8 @@ async def news_every_day(msg: aiogram.types.Message):
     data = NewsFrom_MigNewsCom(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
+# async def
+
 
 #-----------------------------Разное--------------------------------#
 
@@ -240,6 +243,7 @@ async def timer(wait_for):
     global need_to_send, needtime, Gmessage, morning_message_was
     while True:
         await asyncio.sleep(wait_for)
+
         if dt.now() >= needtime and need_to_send:
             await bot.send_message(*Gmessage)
             print(*Gmessage)
@@ -248,12 +252,13 @@ async def timer(wait_for):
         if str(dt.now())[11:16] == '04:20' and not morning_message_was:
             await bot.send_sticker(founder_id, Sticers.def_morshu)
             news = NewsFrom_MigNewsCom(5)
-            await bot.send_message(founder_id, '\n\n'.join(news))
+            await bot.send_message(founder_id, '\n\n'.join(news), parse_mode='HTML')
             morning_message_was = True
-        
+
         new_post = Check_for_new_post()
         if new_post:
             await bot.send_message(founder_id, new_post, parse_mode='HTML')
+
 
 async def shutdown(dispatcher: aiogram.Dispatcher):
     await dispatcher.storage.close()
