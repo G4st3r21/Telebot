@@ -25,6 +25,7 @@ needtime = dt.now()
 need_to_send = False
 Gmessage = ''
 temp_subject = ''
+news_send = False
 
 # ----------------------Стартовые сообщения------------------------ #
 
@@ -238,7 +239,7 @@ async def def_message(msg: aiogram.types.Message):
 
 
 async def timer(wait_for):
-    global need_to_send, needtime, Gmessage
+    global need_to_send, needtime, Gmessage, news_send
     while True:
         await asyncio.sleep(wait_for)
 
@@ -247,10 +248,14 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        if str(dt.now())[14:16] == '00':
+        if str(dt.now())[14:16] == '00' and not news_send:
             await bot.send_sticker(founder_id, Sticers.def_morshu)
             news = NewsFrom_MigNewsCom(5)
             await bot.send_message(founder_id, '\n\n'.join(news), parse_mode='HTML')
+            news_send = True
+
+        if str(dt.now())[14:16] == '01' and news_send:
+            news_send = False
 
         new_post = Check_for_new_post()
         if new_post:
