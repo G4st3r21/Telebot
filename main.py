@@ -224,7 +224,7 @@ async def news_every_day(msg: aiogram.types.Message):
     data = NewsFrom_MigNewsCom(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
-@dp.message_handler(commands=['/news_enable'])
+@dp.message_handler(commands=['news_enable'])
 async def news_enable(msg: aiogram.types.Message):
     WantNews = UsersTable.check_info_by_id(msg.from_user.id)
     if WantNews[-1]:
@@ -233,7 +233,7 @@ async def news_enable(msg: aiogram.types.Message):
         UsersTable.want_to_see_news(msg.from_user.id, 1)
         await bot.send_message(msg.from_user.id, 'Вы успешно подписались на рассылку новостей!\nЯ отправляю новости в 7:20 каждого дня)')
 
-@dp.message_handler(commands=['/news_disable'])
+@dp.message_handler(commands=['news_disable'])
 async def news_disable(msg: aiogram.types.Message):
     WantNews = UsersTable.check_info_by_id(msg.from_user.id)
     if WantNews[-1]:
