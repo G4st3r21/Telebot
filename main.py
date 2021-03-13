@@ -25,8 +25,6 @@ needtime = dt.now()
 need_to_send = False
 Gmessage = ''
 temp_subject = ''
-morning_message_was = False
-print('Бот запущен')
 
 # ----------------------Стартовые сообщения------------------------ #
 
@@ -240,7 +238,7 @@ async def def_message(msg: aiogram.types.Message):
 
 
 async def timer(wait_for):
-    global need_to_send, needtime, Gmessage, morning_message_was
+    global need_to_send, needtime, Gmessage
     while True:
         await asyncio.sleep(wait_for)
 
@@ -249,11 +247,10 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        if str(dt.now())[11:16] == '04:20' and not morning_message_was:
+        if str(dt.now())[14:16] == '00':
             await bot.send_sticker(founder_id, Sticers.def_morshu)
             news = NewsFrom_MigNewsCom(5)
             await bot.send_message(founder_id, '\n\n'.join(news), parse_mode='HTML')
-            morning_message_was = True
 
         new_post = Check_for_new_post()
         if new_post:
