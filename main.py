@@ -3,6 +3,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from data.util import RewriteStates
 from data.news import NewsFrom_MigNewsCom, Check_for_new_post
+from data.db import UsersTable, TaskTable
 from data import Sticers
 import os
 import aiogram
@@ -35,6 +36,7 @@ async def start_message(msg: aiogram.types.Message):
     state = dp.current_state(user=msg.from_user.id)
     await bot.send_sticker(msg.from_user.id, Sticers.def_morshu)
     await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
+    UsersTable.add_to_db((msg.from_user.username, msg.from_user.id))
     print(f'{msg.from_user.username}: /hello')
 
 
@@ -222,11 +224,35 @@ async def news_every_day(msg: aiogram.types.Message):
     data = NewsFrom_MigNewsCom(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
-# @dp.message_handler(commands=['/news_timer'])
-# async def set_news_timer
+@dp.message_handler(commands=['/news_enable'])
+async def news_enable(msg: aiogram.types.Message):
+    WantNews = UsersTable.check_info_by_id(msg.from_user.id)
+    if WantNews[-1]:
+        await bot.send_message(msg.from_user.id, 'Вы и так подписаны на рассылку)')
+    else:
+        UsersTable.want_to_see_news(msg.from_user.id, 1)
+        await bot.send_message(msg.from_user.id, 'Вы успешно подписались на рассылку новостей!\nЯ отправляю новости в 7:20 каждого дня)')
 
-#async def news_every_need_time(msg):
+@dp.message_handler(commands=['/news_disable'])
+async def news_disable(msg: aiogram.types.Message):
+    WantNews = UsersTable.check_info_by_id(msg.from_user.id)
+    if WantNews[-1]:
+        UsersTable.want_to_see_news(msg.from_user.id, 0)
+        await bot.send_message(msg.from_user.id, 'Вы успешно отписались(')
+    else:
+        await bot.send_message(msg.from_user.id, 'Вы и так не подписаны(')
 
+
+async def news_every_need_time():
+    users = UsersTable.check_Want_News()
+
+    if str(dt.now())[11:16] == '04:20':
+        news = NewsFrom_MigNewsCom(5)
+        for user in users:
+            await bot.send_sticker(user[2], Sticers.def_morshu)
+            await bot.send_message(user[2], '\n\n'.join(news), parse_mode='HTML')
+    
+    await asyncio.sleep(60)
 
 #-----------------------------Разное--------------------------------#
 
@@ -250,12 +276,6 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        if str(dt.now())[11:16] == '04:20':
-            await bot.send_sticker(founder_id, Sticers.def_morshu)
-            news = NewsFrom_MigNewsCom(5)
-            await bot.send_message(founder_id, '\n\n'.join(news), parse_mode='HTML')
-            await asyncio.sleep(60)
-
         new_post = Check_for_new_post()
         if new_post:
             await bot.send_message(founder_id, new_post, parse_mode='HTML')
@@ -268,4 +288,5 @@ async def shutdown(dispatcher: aiogram.Dispatcher):
 
 if __name__ == "__main__":
     loop.create_task(timer(5))
+    loop.create_task(news_every_need_time())
     aiogram.executor.start_polling(dp, on_shutdown=shutdown)
