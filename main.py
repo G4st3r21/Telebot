@@ -25,7 +25,6 @@ needtime = dt.now()
 need_to_send = False
 Gmessage = ''
 temp_subject = ''
-news_send = False
 
 # ----------------------Стартовые сообщения------------------------ #
 
@@ -223,7 +222,10 @@ async def news_every_day(msg: aiogram.types.Message):
     data = NewsFrom_MigNewsCom(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
-# async def
+# @dp.message_handler(commands=['/news_timer'])
+# async def set_news_timer
+
+#async def news_every_need_time(msg):
 
 
 #-----------------------------Разное--------------------------------#
@@ -239,7 +241,7 @@ async def def_message(msg: aiogram.types.Message):
 
 
 async def timer(wait_for):
-    global need_to_send, needtime, Gmessage, news_send
+    global need_to_send, needtime, Gmessage
     while True:
         await asyncio.sleep(wait_for)
 
@@ -248,14 +250,11 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        if str(dt.now())[14:16] == '00' and not news_send:
+        if str(dt.now())[11:16] == '04:20':
             await bot.send_sticker(founder_id, Sticers.def_morshu)
             news = NewsFrom_MigNewsCom(5)
             await bot.send_message(founder_id, '\n\n'.join(news), parse_mode='HTML')
-            news_send = True
-
-        if str(dt.now())[14:16] == '01' and news_send:
-            news_send = False
+            await asyncio.sleep(60)
 
         new_post = Check_for_new_post()
         if new_post:
