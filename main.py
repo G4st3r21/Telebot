@@ -2,7 +2,7 @@ from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from data.util import RewriteStates
-from data.news import NewsFrom_MigNewsCom, Check_for_new_post
+from data.Meduza_API import NewsFromMeduza
 from data.db import UsersTable, TaskTable
 from data import Sticers
 import os
@@ -221,8 +221,10 @@ async def set_timer3(msg: aiogram.types.Message):
 
 @dp.message_handler(commands=['news'])
 async def news_every_day(msg: aiogram.types.Message):
-    data = NewsFrom_MigNewsCom(7)
+    data = NewsFromMeduza(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
+    print(f'{msg.from_user.username}: /news')
+
 
 @dp.message_handler(commands=['news_enable'])
 async def news_enable(msg: aiogram.types.Message):
@@ -232,6 +234,8 @@ async def news_enable(msg: aiogram.types.Message):
     else:
         UsersTable.want_to_see_news(msg.from_user.id, 1)
         await bot.send_message(msg.from_user.id, 'Вы успешно подписались на рассылку новостей!\nЯ отправляю новости в 7:20 каждого дня)')
+    print(f'{msg.from_user.username}: /news_enable')
+
 
 @dp.message_handler(commands=['news_disable'])
 async def news_disable(msg: aiogram.types.Message):
@@ -241,17 +245,18 @@ async def news_disable(msg: aiogram.types.Message):
         await bot.send_message(msg.from_user.id, 'Вы успешно отписались(')
     else:
         await bot.send_message(msg.from_user.id, 'Вы и так не подписаны(')
+    print(f'{msg.from_user.username}: /news_disable')
 
 
 async def news_every_need_time():
     users = UsersTable.check_Want_News()
 
     if str(dt.now())[11:16] == '04:20':
-        news = NewsFrom_MigNewsCom(5)
+        news = NewsFromMeduza(5)
         for user in users:
             await bot.send_sticker(user[2], Sticers.def_morshu)
             await bot.send_message(user[2], '\n\n'.join(news), parse_mode='HTML')
-    
+
     await asyncio.sleep(60)
 
 #-----------------------------Разное--------------------------------#
