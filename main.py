@@ -281,9 +281,9 @@ async def timer(wait_for):
             print(*Gmessage)
             need_to_send = False
 
-        new_post = Check_for_new_post()
-        if new_post:
-            await bot.send_message(founder_id, new_post, parse_mode='HTML')
+        # new_post = Check_for_new_post()
+        # if new_post:
+        #     await bot.send_message(founder_id, new_post, parse_mode='HTML')
 
 
 async def shutdown(dispatcher: aiogram.Dispatcher):
