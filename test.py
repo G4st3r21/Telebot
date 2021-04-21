@@ -1,3 +1,3 @@
 from datetime import datetime as dt
 
-print(str(dt.now())[14:16])
+print(str(dt.today().isoweekday()))

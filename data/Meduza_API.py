@@ -10,7 +10,7 @@ def NewsFromMeduza(N):
     news = []
     for i in ans['documents']:
         news.append(hlink(ans['documents'][i]['title'],
-                          ans['documents'][i]['url']))
+                          'https://meduza.io/' + ans['documents'][i]['url']))
 
     # for i in range(10):
     #     print(news[i], urls[i], sep='\n', end='\n\n')
