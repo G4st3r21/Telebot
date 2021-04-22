@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "tardis-isbv",
+  "private_key_id": "a8b739ce96e6492c9f59d213aeb1793e3bbbce9e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCjomGE2zh4PvOt\n0zR6R2QWGsQaI9O01cA3zBbtdPfBLCoQb0LXuTC4KxLIVDud/p2irSAyJPDDlNRK\n/HcQxaHv4er5DbY0lFB6xPnagZ+Byo07jt94YnrGjYCVxxqShd2mdlskHaDdNAag\n1tdzISFFBZZURHePJWKCgIBfFmFYg+G+yA3nJFvVjQ7IMkrcD3azl2eDFKU9Zgtf\nr/PIqynvH9WdNyGL5DrQ94L48Ym2yRPzwtIKn0f2WIXtusurzHICi87zcIvyddT1\nkamSSE3Mv4oeYnNDYy8PlianveT+PvW1H1E7icbM9QZ0WE7oguQP9BgCcWxSmogS\nSK5Dg8YdAgMBAAECggEAHuc21Zl1M7hn2uctXP6Il2gcqvcjL17C+4auuc/CTpgh\npZLto8IUwmNYG79UtwT0Dln136J8WeOMqFC/x8obSCt5bem6BHoSLO1wZmTek+uF\n+r6D0799gmwM4byFdzCS6LInik2SKNR/f/azH8oc92UTu/xmPAGKdi0AkXSvk8Cf\nHVkCVCJ8tsIE2h/1pIXgmEqRLUsAGFPIbW83vrt1Xbl5ZTUrcUaak4f5yqNwZfjg\nXd35Ju+uz8yde8urYK7WmQbSgMDte6feiLN4QJLQwvaczIcVrudElxcFeTU0zIL0\nudPPvdIg+mVjLGE4FHVkX70tt6iHu0Py0WSmIZ6jwQKBgQDOKNKkXTepQqDLn3yy\nx7G2VFgwD176LskZ6cnsXDi32R/vqCqMVnNRlywQkOI68YL0ikwgeyhDzcSQzV3M\nN2j8OvhAoG8LRNX6ZYzsYO4Q/5rEzQyvGC1kQ1eOpUrALBGePNgEyCOYNlpWdDxt\nV6LTJLIVHyDbIIKL+xsvUcmm0QKBgQDLMa6uaXSM0kg1bBRZoEJCt1WwnnV1YGXz\nZnnZtszUo599aJiorvSwV+C5PB+LIyaYEHSVXuH52R+rPIKos12J7ZrODxfLapo+\nnh/lwJWiN51cU0LQ2Rj4RgQ2ld4uUhGEdgNM1KfghI+G/WQpGKHVM/LzDDi7T8Kv\nJAiAvPfVjQJ/HpnwqnUrzfQV6iPCXsdFmcrrTDb74icPsskBMBSAVsnj868CodIz\nS+kkoVDgQ9+VkLb2lduyHl5szxGs2qNe8hHOx8kIsqOFH6XzRSMeM2e9kXjeaR8t\nnbRhSss+TUg9VT+y0QLkRbPLtQmL7q8TfEP2KyxztBMfTaf4YQ3C4QKBgQCvcrqu\nBoiIf5mx5xy7NtF/4eWvl2M8cnwVasqT3m+Gu7GfC42lOUw2Z+q2ht+FuFg+vRat\nUzw0C/J4XMtE93sw+WTNv+J/1hBROR+5tkx9wR+y9IGg65PP7ET/DPDHdj2B7pRy\n5rv99PgpSuoNQiOagDyq+EaUFg64Q5jD8GbekQKBgHWdRxbv96b6uJPhY7Bwjbcq\nyUc1v6fBMstTnWIrLHBPTXY9E0JOLVHoTYmK0JbSRrxWrhm0p1m0aw/7kRQYGYX/\n+xiWU1TCkxnyRRzn8UNy2ay86eqKeJXv6OwbpbCIkn+MLYsKnUYzaS7cdML/ZLiU\nBZN8pTIxxGFDnmiQnTuX\n-----END PRIVATE KEY-----\n",
+  "client_email": "tardis@tardis-isbv.iam.gserviceaccount.com",
+  "client_id": "102526221439446739333",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tardis%40tardis-isbv.iam.gserviceaccount.com"
+}

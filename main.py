@@ -1,14 +1,16 @@
 from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from data.Meduza_API import NewsFromMeduza
+from data.meduza_API import NewsFromMeduza
+from data.weather_API import WeatherCheck
+from data.dialog_module import AI_chatting
 from data.db import UsersTable, TaskTable
-from data import Sticers
+from data import sticers
+import data.keyboard as kb
 import os
 import aiogram
 from datetime import datetime as dt
 import asyncio
-from data import Sticers
 
 
 # ----------------------bot init------------------------ #
@@ -58,25 +60,31 @@ months = {
 async def start_message(msg: aiogram.types.Message):
     global state
     state = dp.current_state(user=msg.from_user.id)
-    await bot.send_sticker(msg.from_user.id, Sticers.def_morshu)
-    await bot.send_message(msg.from_user.id, 'Хай! Я Моршу, твой верный слуга)')
+    await bot.send_sticker(msg.from_user.id, sticers.def_s)
+    await bot.send_message(msg.from_user.id, 'Хай! Я Тардис, машина времени. Ну почти...', reply_markup=kb.greet_kb)
     UsersTable.add_to_db((msg.from_user.username, msg.from_user.id))
     print(f'{msg.from_user.username}: /hello')
 
 
 @dp.message_handler(commands=['help'])
 async def help_message(msg: aiogram.types.Message):
-    with open(f'files/HELP.txt', mode='r', encoding='utf-8') as file:
+    with open(f'data/Answers/HELP.txt', mode='r', encoding='utf-8') as file:
         text = file.read()
-    await bot.send_sticker(msg.from_user.id, Sticers.help_morshu)
+    await bot.send_sticker(msg.from_user.id, sticers.def_s)
     await bot.send_message(msg.from_user.id, text)
     print(f'{msg.from_user.username}: /help')
 
 #--------------------------Новости на каждое утро----------------------------#
 
+
+@dp.message_handler(commands=['problem'])
+async def Day_with_problem(msg: aiogram.types.Message):
+    daysWithoutProblems = 0
+
+
 @dp.message_handler(commands=['testms'])
 async def Morning_Mailing(msg: aiogram.types.Message):
-    with open('data/morning_text.txt', 'r', encoding='utf-8') as text:
+    with open('data/Answers/morning_text.txt', 'r', encoding='utf-8') as text:
         text = text.readlines()
     news = NewsFromMeduza(10)
     # print(*text)
@@ -88,21 +96,31 @@ async def Morning_Mailing(msg: aiogram.types.Message):
             today[1] = months[int(today[1])].lower()
             today[0] = weekdays[int(dt.today().isoweekday())].lower()
             today.reverse()
-            text[i] = text[i].replace('[ДАТА УДАЛЕНА]', str(''.join(today[:-1]) + f' - {today[-1]}'))
-            # print(today, text[i])
+
+            text[i] = text[i].replace('[ДАТА УДАЛЕНА]', str(
+                ''.join(today[:-1]) + f' - {today[-1]}'))
         elif '[ДПБП УДАЛЕНО]' in text[i]:
-            text[i] = text[i].replace('[ДПБП УДАЛЕНО]', str(daysWithoutProblems))
+            text[i] = text[i].replace(
+                '[ДПБП УДАЛЕНО]', str(daysWithoutProblems))
         elif '[ПОГОДА УДАЛЕНА]' in text[i]:
-            text[i] = text[i].replace('[ПОГОДА УДАЛЕНА]', '[В РАЗРАБОТКЕ]')
+            weather = WeatherCheck()
+            text[i] = text[i].replace('[ПОГОДА УДАЛЕНА]', ''.join(weather))
         elif '[НОВОСТИ УДАЛЕНЫ]' in text[i]:
             text[i] = text[i].replace('[НОВОСТИ УДАЛЕНЫ]', '\n\n'.join(news))
-    
+
     await bot.send_message(msg.from_user.id, ''.join(text), parse_mode='HTML')
     print(f'{msg.from_user.username}: testing news...')
 
 
+@dp.message_handler(commands=['weather'])
+async def weatherNow(msg: aiogram.types.Message):
+    data = WeatherCheck()
+    await bot.send_message(msg.from_user.id, ''.join(data))
+    print(f'{msg.from_user.username}: /weather')
+
+
 @dp.message_handler(commands=['news'])
-async def news_every_day(msg: aiogram.types.Message):
+async def newsNow(msg: aiogram.types.Message):
     data = NewsFromMeduza(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
     print(f'{msg.from_user.username}: /news')
@@ -136,10 +154,32 @@ async def news_every_need_time():
     if str(dt.now())[11:16] == '04:20':
         news = NewsFromMeduza(5)
         for user in users:
-            await bot.send_sticker(user[2], Sticers.def_morshu)
+            await bot.send_sticker(user[2], sticers.def_s)
             await bot.send_message(user[2], '\n\n'.join(news), parse_mode='HTML')
 
     await asyncio.sleep(60)
+#-----------------------Текстовые команды--------------------------#
+
+
+@dp.message_handler()
+async def text_comands(msg: aiogram.types.Message):
+    text = (str(msg.text).strip()).lower()
+    if text == 'время':
+        await bot.send_message(msg.from_user.id, f'Сейчас {str(dt.now())[11:19]}')
+    elif text == 'погода':
+        await weatherNow(msg)
+    elif text == 'новости':
+        await newsNow(msg)
+    elif text == 'привет':
+        await start_message(msg)
+    else:
+        ans = AI_chatting(text)
+        if ans:
+            await bot.send_message(msg.from_user.id, ans)
+        else:
+            await bot.send_message(msg.from_user.id, 'аыаыаыаыаы, я не знаю, что ответить')
+    #     await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
+    print(f'{msg.from_user.username}: {msg.text}')
 
 #-----------------------------Разное--------------------------------#
 
@@ -148,13 +188,14 @@ async def news_every_need_time():
 async def def_message(msg: aiogram.types.Message):
     global state
     state = dp.current_state(user=msg.from_user.id)
-    await bot.send_sticker(msg.from_user.id, Sticers.excausted_morshu)
+    # await bot.send_sticker(msg.from_user.id, sticers)
     await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
     print(f'{msg.from_user.username}: {msg.text}')
 
 
 async def timer(wait_for):
-    global need_to_send, needtime, Gmessage
+    global need_to_send, needtime, Gmessage, daysWithoutProblems
+    today = str(dt.today())[8:11]
     while True:
         await asyncio.sleep(wait_for)
 
@@ -162,6 +203,10 @@ async def timer(wait_for):
             await bot.send_message(*Gmessage)
             print(*Gmessage)
             need_to_send = False
+
+        if today != str(dt.today())[8:11]:
+            today = str(dt.today())[8:11]
+            daysWithoutProblems += 1
 
         # new_post = Check_for_new_post()
         # if new_post:

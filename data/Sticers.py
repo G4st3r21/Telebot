@@ -1,4 +1,2 @@
-def_morshu = 'CAACAgIAAxkBAALsmmBBQcegHCnVZ15sileT44kVXaP7AAIcAAMMpQ4usHzsfdDL3YMeBA'
-excausted_morshu = 'CAACAgIAAxkBAALsnWBBQg1p39ODUflOjO4icKlTK8tNAAIgAAMMpQ4uQUbHn2wyMYoeBA'
-help_morshu = 'CAACAgIAAxkBAALvVWBEt6sg2ci25oRQQy9WYwzvWL4BAAIiAAMMpQ4uz19V6qBriwEeBA'
-good_morshu = ''
+def_s = 'CAACAgIAAxkBAAEBM0dggXkLrmBdaax1B4E3ejRUMaFdIgACOAIAArrAlQVLvY-LJaTtAAEfBA'
+good_s = 'CAACAgIAAxkBAAEBM0RggXkI-giDK1ap3ETiLtoDtepu5wACNQIAArrAlQWDyVsbzOPgPR8E'
