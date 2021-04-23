@@ -1,6 +1,3 @@
-import os
-print(os.path.abspath('main.py'))
-
 from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
@@ -8,8 +5,9 @@ from data.Meduza_API import NewsFromMeduza
 from data.weather_API import WeatherCheck
 from data.dialog_module import AI_chatting
 from data.db import UsersTable, TaskTable
-from data import sticers
+from data import Sticers
 import data.keyboard as kb
+import os
 import aiogram
 from datetime import datetime as dt
 import asyncio
@@ -21,7 +19,6 @@ bot = aiogram.Bot(token=token)
 dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 loop = asyncio.get_event_loop()
-print(os.path.abspath('main.py'))
 
 # --------------------other params----------------------- #
 
