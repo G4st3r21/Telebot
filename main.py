@@ -22,6 +22,7 @@ loop = asyncio.get_event_loop()
 
 path = os.path.abspath('data/Answers/tardis-isbv-a8b739ce96e6.json')
 os.system(f"export GOOGLE_APPLICATION_CREDENTIALS={path}")
+print(f"export GOOGLE_APPLICATION_CREDENTIALS={path}")
 # --------------------other params----------------------- #
 
 state = ''
