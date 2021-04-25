@@ -5,7 +5,7 @@ from data.Meduza_API import NewsFromMeduza
 from data.weather_API import WeatherCheck
 from data.dialog_module import AI_chatting
 from data.db import UsersTable, TaskTable
-from data import Sticers
+from data import sticers
 import data.keyboard as kb
 import os
 import aiogram
@@ -20,6 +20,8 @@ dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 loop = asyncio.get_event_loop()
 
+path = os.path.abspath('data/Answers/tardis-isbv-a8b739ce96e6.json')
+os.system(f"export GOOGLE_APPLICATION_CREDENTIALS={path + '/data/Answers/tardis-isbv-a8b739ce96e6.json'}")
 # --------------------other params----------------------- #
 
 state = ''
