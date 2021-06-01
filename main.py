@@ -25,6 +25,10 @@ print(path)
 
 os.putenv("GOOGLE_APPLICATION_CREDENTIALS", path)
 print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = path
+print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+
 # --------------------other params----------------------- #
 
 state = ''
