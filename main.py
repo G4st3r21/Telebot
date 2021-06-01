@@ -21,8 +21,10 @@ dp.middleware.setup(LoggingMiddleware())
 loop = asyncio.get_event_loop()
 
 path = os.path.abspath('data/Answers/tardis-isbv-a8b739ce96e6.json')
-os.system(f'set GOOGLE_APPLICATION_CREDENTIALS={path}')
-print(f'set GOOGLE_APPLICATION_CREDENTIALS={path}')
+print(path)
+
+os.putenv("GOOGLE_APPLICATION_CREDENTIALS", path)
+print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 # --------------------other params----------------------- #
 
 state = ''
@@ -180,7 +182,7 @@ async def text_comands(msg: aiogram.types.Message):
         if ans:
             await bot.send_message(msg.from_user.id, ans)
         else:
-            await bot.send_message(msg.from_user.id, 'аыаыаыаыаы, я не знаю, что ответить')
+            await bot.send_message(msg.from_user.id, 'Я конечно искуственный интеллект, но на это отвечать еще не научился(')
     #     await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
     print(f'{msg.from_user.username}: {msg.text}')
 
