@@ -182,7 +182,7 @@ async def text_comands(msg: aiogram.types.Message):
     elif text == 'логи':
         if msg.from_user.id == founder_id:
             with open('logs.txt', 'r', encoding='utf-8') as file:
-                logs = file.readlines()[-1:-15]
+                logs = file.readlines()[-1:-15:-1]
                 logging.warning('Логи выданы разработчику')
                 await bot.send_message(msg.from_user.id, ''.join(logs))
         else:
