@@ -11,6 +11,7 @@ import os
 import aiogram
 from datetime import datetime as dt
 import asyncio
+import logging
 
 
 # ----------------------bot init------------------------ #
@@ -19,11 +20,10 @@ bot = aiogram.Bot(token=token)
 dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 loop = asyncio.get_event_loop()
+logging.basicConfig(filename='logs.txt', encoding='utf-8', level=logging.INFO)
+logging.info('Я запустився')
 
 path = os.path.abspath('data/Answers/tardis-isbv-a8b739ce96e6.json')
-print(path)
-
-os.putenv("GOOGLE_APPLICATION_CREDENTIALS", path)
 print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = path
@@ -72,7 +72,6 @@ async def start_message(msg: aiogram.types.Message):
     await bot.send_sticker(msg.from_user.id, sticers.def_s)
     await bot.send_message(msg.from_user.id, 'Хай! Я Тардис, машина времени. Ну почти...', reply_markup=kb.greet_kb)
     UsersTable.add_to_db((msg.from_user.username, msg.from_user.id))
-    print(f'{msg.from_user.username}: /hello')
 
 
 @dp.message_handler(commands=['help'])
@@ -125,14 +124,12 @@ async def Morning_Mailing(msg: aiogram.types.Message):
 async def weatherNow(msg: aiogram.types.Message):
     data = WeatherCheck()
     await bot.send_message(msg.from_user.id, ''.join(data))
-    print(f'{msg.from_user.username}: /weather')
 
 
 @dp.message_handler(commands=['news'])
 async def newsNow(msg: aiogram.types.Message):
     data = NewsFromMeduza(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
-    print(f'{msg.from_user.username}: /news')
 
 
 @dp.message_handler(commands=['news_enable'])
@@ -173,6 +170,7 @@ async def news_every_need_time():
 @dp.message_handler()
 async def text_comands(msg: aiogram.types.Message):
     text = (str(msg.text).strip()).lower()
+    logging.info(f'{msg.from_user.username}: {text}')
     if text == 'время':
         await bot.send_message(msg.from_user.id, f'Сейчас {str(dt.now())[11:19]}')
     elif text == 'погода':
@@ -181,14 +179,24 @@ async def text_comands(msg: aiogram.types.Message):
         await newsNow(msg)
     elif text == 'привет':
         await start_message(msg)
+    elif text == 'логи':
+        if msg.from_user.id == founder_id:
+            with open('logs.txt', 'r', encoding='utf-8') as file:
+                logs = file.readlines()[-1:-15:-1]
+                logging.warning('Логи выданы разработчику')
+                await bot.send_message(msg.from_user.id, ''.join(logs))
+        else:
+            logging.warning(f'{msg.from_user.username} запросил логи. Отказано в доступе.')
+            await bot.send_message(msg.from_user.id, f'У вас недостаточно прав, я не могу поделиться логами с вами(')
     else:
         ans = AI_chatting(text)
         if ans:
+            logging.info(f'Мой ответ: "{ans}"')
             await bot.send_message(msg.from_user.id, ans)
         else:
+            logging.warning('Я не нашел ответа на это сообщение :(')
+            print('Я не нашел ответ на сообщения пользователя', {msg.from_user.username}, 'см. логи')
             await bot.send_message(msg.from_user.id, 'Я конечно искуственный интеллект, но на это отвечать еще не научился(')
-    #     await bot.send_message(msg.from_user.id, 'Я не знаю, как на это реагировать\nЕсть вопросы? Напиши - /help!')
-    print(f'{msg.from_user.username}: {msg.text}')
 
 #-----------------------------Разное--------------------------------#
 

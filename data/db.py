@@ -1,6 +1,5 @@
 import sqlite3
 
-
 class TaskTable():
     def __init__(self):
         self.con = sqlite3.connect('db/AllTables.db')
@@ -41,9 +40,10 @@ class UserTable():
             self.cur.execute(
                 f'INSERT INTO {self.table}(UserName, UserID, WantNews) VALUES ("{UserName}", {UserID}, 0)')
             self.con.commit()
+            logging.info(f'Добавлен новый пользователь: {UserName}')
             print('Новый пользователь. Добавлены данные в таблицу')
         except Exception:
-            print('Данный пользователь уже есть в бд')
+            print(f'О, {UserName} поздоровался со мной!')
 
     def del_from_db(self, UserID):
         self.cur.execute(f'DELETE FROM {self.table} WHERE UserID = "{UserID}"')
@@ -57,12 +57,12 @@ class UserTable():
         self.con.commit()
 
         print('Изменены данные в таблице')
-    
+
     def check_Want_News(self):
         people = self.cur.execute(
             f'SELECT * FROM {self.table} WHERE WantNews = 1').fetchall()
         return people
-    
+
     def check_info_by_id(self, UserID):
         return self.cur.execute(
             f'SELECT * FROM {self.table} WHERE UserID = {UserID}').fetchall()
