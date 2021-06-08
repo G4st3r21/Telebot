@@ -1,31 +1,30 @@
 import sqlite3
 
-class TaskTable():
+class ReminderTable():
     def __init__(self):
         self.con = sqlite3.connect('db/AllTables.db')
         self.cur = self.con.cursor()
-        self.table = 'Tasks'
+        self.table = 'Reminder'
 
     def add_to_db(self, params):
-        name, done, datetime, user_id = params
+        text, datetime, user_id = params
         self.cur.execute(
-            f'INSERT INTO {self.table}(TaskName, Done, Date, UserID) VALUES ("{name}", {done}, "{datetime}", "{user_id}")')
+            f'INSERT INTO {self.table}(Text, Date, UserID) VALUES ("{text}", "{datetime}", "{user_id}")')
         self.con.commit()
 
         print('Добавлены данные в таблицу')
 
-    def del_from_db(self, name):
-        self.cur.execute(f'DELETE FROM {self.table} WHERE Taskname = "{name}"')
+    def del_from_db(self, text):
+        self.cur.execute(f'DELETE FROM {self.table} WHERE Text = "{text}"')
         self.con.commit()
 
         print('Удалены данные из таблицы')
-
-    def change_value_done(self, name, done):
-        self.cur.execute(
-            f'UPDATE {self.table} SET Done = "{done}" WHERE Taskname LIKE "{name}"')
-        self.con.commit()
-
-        print('Изменены данные в таблице')
+    
+    def check_avaibility(self, time):
+        people = self.cur.execute(
+            f'SELECT * FROM {self.table} WHERE Date = {time}').fetchall()
+        
+        return people
 
 
 class UserTable():
@@ -74,5 +73,4 @@ class UserTable():
 # Userstest.add_to_db(('pukich', '503655279', '0'))
 
 
-TaskTable = TaskTable()
 UsersTable = UserTable()

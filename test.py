@@ -1,14 +1,8 @@
-import logging
+from datetime import datetime as dt
 
-logging.basicConfig(filename='example.log', encoding='utf-8')
+time = str(dt.now())[:16]
 
+print(time)
 
-def log_to_file():
-    i = 0
-    while i < 10:
-        logging.warning('привет')
-        i += 1
-
-
-if __name__ == '__main__':
-    log_to_file()
+with open('db/AllTables.db', 'r') as file:
+    print(file)
