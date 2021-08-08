@@ -110,64 +110,6 @@ async def ReminderON():
                 rem.del_from_db(text)
                 await bot.send_message(id, text)
 
-#--------------------------Новости на каждое утро----------------------------#
-
-
-@dp.message_handler(commands=['problem'])
-async def Day_with_problem(msg: aiogram.types.Message):
-    daysWithoutProblems = 0
-
-
-# @dp.message_handler(commands=['testms'])
-# async def Morning_Mailing(msg: aiogram.types.Message):
-#     with open('data/Answers/morning_text.txt', 'r', encoding='utf-8') as text:
-#         text = text.readlines()
-#     news = NewsFromMeduza(10)
-#     # print(*text)
-
-#     for i in range(len(text)):
-#         if '[ДАТА УДАЛЕНА]' in text[i]:
-#             today = str(dt.today())[:11].split('-')
-#             today[1] = months[int(today[1])].lower()
-#             today[0] = weekdays[int(dt.today().isoweekday())].lower()
-#             today.reverse()
-
-#             text[i] = text[i].replace('[ДАТА УДАЛЕНА]', str(
-#                 ''.join(today[:-1]) + f' - {today[-1]}'))
-#         elif '[ДПБП УДАЛЕНО]' in text[i]:
-#             text[i] = text[i].replace(
-#                 '[ДПБП УДАЛЕНО]', str(daysWithoutProblems))
-#         elif '[ПОГОДА УДАЛЕНА]' in text[i]:
-#             weather = WeatherCheck()
-#             text[i] = text[i].replace('[ПОГОДА УДАЛЕНА]', ''.join(weather))
-#         elif '[НОВОСТИ УДАЛЕНЫ]' in text[i]:
-#             text[i] = text[i].replace('[НОВОСТИ УДАЛЕНЫ]', '\n\n'.join(news))
-
-#     await bot.send_message(msg.from_user.id, ''.join(text), parse_mode='HTML')
-#     print(f'{msg.from_user.username}: testing news...')
-
-
-# @dp.message_handler(commands=['news_enable'])
-# async def news_enable(msg: aiogram.types.Message):
-#     WantNews = UsersTable.check_info_by_id(msg.from_user.id)
-#     if WantNews[-1]:
-#         await bot.send_message(msg.from_user.id, 'Вы и так подписаны на рассылку)')
-#     else:
-#         UsersTable.want_to_see_news(msg.from_user.id, 1)
-#         await bot.send_message(msg.from_user.id, 'Вы успешно подписались на рассылку новостей!\nЯ отправляю новости в 7:20 каждого дня)')
-#     print(f'{msg.from_user.username}: /news_enable')
-
-
-# @dp.message_handler(commands=['news_disable'])
-# async def news_disable(msg: aiogram.types.Message):
-#     WantNews = UsersTable.check_info_by_id(msg.from_user.id)
-#     if WantNews[-1]:
-#         UsersTable.want_to_see_news(msg.from_user.id, 0)
-#         await bot.send_message(msg.from_user.id, 'Вы успешно отписались(')
-#     else:
-#         await bot.send_message(msg.from_user.id, 'Вы и так не подписаны(')
-#     print(f'{msg.from_user.username}: /news_disable')
-
 #-----------------------Текстовые команды--------------------------#
 
 @dp.message_handler()
@@ -182,8 +124,6 @@ async def text_comands(msg: aiogram.types.Message):
         await newsNow(msg)
     elif text == 'привет':
         await start_message(msg)
-    # elif text == 'создать напоминание':
-    #     await 
     elif text == 'логи':
         if msg.from_user.id == founder_id:
             with open('logs.txt', 'r', encoding='utf-8') as file:
@@ -205,6 +145,9 @@ async def text_comands(msg: aiogram.types.Message):
 
 #-----------------------------Разное--------------------------------#
 
+@dp.message_handler(commands=['problem'])
+async def Day_with_problem(msg: aiogram.types.Message):
+    daysWithoutProblems = 0
 
 @dp.message_handler()
 async def def_message(msg: aiogram.types.Message):
