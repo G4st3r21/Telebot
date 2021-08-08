@@ -1,3 +1,4 @@
+from google.api_core.gapic_v1 import config
 from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
@@ -6,6 +7,7 @@ from data.weather_API import WeatherCheck
 from data.dialog_module import AI_chatting
 from data.db import UsersTable, ReminderTable
 from data import Sticers as sticers
+from data.states import AllStates
 import data.keyboard as kb
 import os
 import aiogram
@@ -30,8 +32,6 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = path
 print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 
 # --------------------other params----------------------- #
-
-state = ''
 
 weekdays = {
     1: 'Понедельник',
@@ -97,18 +97,40 @@ async def newsNow(msg: aiogram.types.Message):
     data = NewsFromMeduza(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
-async def ReminderON():
-    while True:
-        asyncio.wait_for(1)
+# async def ReminderON():
+#     while True:
+#         asyncio.wait_for(1)
 
-        rem = ReminderTable()
-        time = str(dt.now())[:16]
-        people = rem.check_avaibility(time)
-        if people:
-            for i in people:
-                text, id = f'Напоминаю:\n{i[0]}', i[2]
-                rem.del_from_db(text)
-                await bot.send_message(id, text)
+#         rem = ReminderTable()
+#         time = str(dt.now())[:16]
+#         people = rem.check_avaibility(time)
+#         if people:
+#             for i in people:
+#                 text, id = f'Напоминаю:\n{i[0]}', i[2]
+#                 rem.del_from_db(text)
+#                 await bot.send_message(id, text)
+
+#----------------------------Рассылка------------------------------#
+
+async def dayly_mailing():
+    people = UsersTable.cur.execute("SELECT UserID FROM Users").fetchall()
+    for ID in people:
+        print('Отправил сообщение', *ID)
+        await bot.send_sticker(*ID, sticers.hello_s)
+        await bot.send_message(*ID, 'Привет! Это все та же Тардис.\n\nДоктор решил, что пора обновить мой функционал, пополнив его. Однако он не знает чем :( \n\nИ ты можешь ему помочь, написав любую идею для меня!', reply_markup=kb.inline_maling)
+
+@dp.message_handler(commands=['idea'])
+@dp.callback_query_handler(lambda c: c.data == 'button_yes')
+async def process_callback_button_yes(callback_query: aiogram.types.CallbackQuery):
+    st = dp.current_state(user=callback_query.from_user.id)
+
+    await st.set_state(AllStates.MAILING_STATE)
+    await bot.send_message(callback_query.from_user.id, 'Отлично, теперь напиши мне цельным сообщением всё, что ты хочешь предложить, а я отправлю эту информацию Доктору)')
+
+@dp.callback_query_handler(lambda c: c.data == 'button_no')
+async def process_callback_button_no(callback_query: aiogram.types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, 'Я поняла.\n\nЕсли что, ты всегда можешь предожить идею, написав /idea\n\nХорошего дня)')
 
 #-----------------------Текстовые команды--------------------------#
 
@@ -124,6 +146,8 @@ async def text_comands(msg: aiogram.types.Message):
         await newsNow(msg)
     elif text == 'привет':
         await start_message(msg)
+    elif text == 'рассылка':
+        await dayly_mailing()
     elif text == 'логи':
         if msg.from_user.id == founder_id:
             with open('logs.txt', 'r', encoding='utf-8') as file:
@@ -142,6 +166,16 @@ async def text_comands(msg: aiogram.types.Message):
             logging.warning('Я не нашел ответа на это сообщение :(')
             print('Я не нашел ответ на сообщения пользователя', {msg.from_user.username}, 'см. логи')
             await bot.send_message(msg.from_user.id, 'Я конечно искуственный интеллект, но на это отвечать еще не научился(')
+
+@dp.message_handler(state='*')
+async def send_idea_to_Doc(msg: aiogram.types.Message):
+    st = dp.current_state(user=msg.from_user.id)
+    name = msg.from_user.full_name
+    text = msg.text
+    await bot.send_message(founder_id, f'{name} написал(а):\n\n{text}')
+    await bot.send_sticker(msg.from_user.id, sticers.love_s)
+    await bot.send_message(msg.from_user.id, 'Спасибо, Доктор обязательно прочитает вашу идею)')
+    await st.reset_state()
 
 #-----------------------------Разное--------------------------------#
 
@@ -163,6 +197,5 @@ async def shutdown(dispatcher: aiogram.Dispatcher):
 
 
 if __name__ == "__main__":
-    # loop.create_task(news_every_need_time())
-    loop.create_task(ReminderON())
+    # loop.create_task(ReminderON())
     aiogram.executor.start_polling(dp, on_shutdown=shutdown)

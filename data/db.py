@@ -74,3 +74,8 @@ class UserTable():
 
 
 UsersTable = UserTable()
+
+people = UsersTable.cur.execute("SELECT UserID FROM Users").fetchall()
+
+for num in people:
+    print(*num)
