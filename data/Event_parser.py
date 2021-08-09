@@ -43,7 +43,7 @@ def Afisha_ru_films():
         Endstrk += f'Название: {films[i][0]}\n\n'
         Endstrk += f'Жанр: {films_genres[i][0]}\n\n'
         Endstrk += f'Описание: {films_descriptions[i][0]}\n\n'
-        Endstrk += f'Подробнее: {url}{films_links[i][1:]}'
+        Endstrk += f'Подробнее: https://www.afisha.ru/{films_links[i][1:]}'
         Endstrk += '\n\n-------------------------------------------\n\n'
     
     return Endstrk
