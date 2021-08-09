@@ -4,3 +4,4 @@ requests==2.25.1
 google-api-core==1.26.3
 dialogflow==1.1.0
 grpcio==1.37.0
+lxml==4.6.3
