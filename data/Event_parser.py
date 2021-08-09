@@ -9,7 +9,7 @@ def Yandex_Afisha_events():
 
     url = 'https://afisha.yandex.ru/voronezh?preset=today'
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'lxml')
+    soup = BeautifulSoup(response.text)
     print(soup.get_text(' '))
     events = soup.find_all('h2', class_='Title-sc-5meihc-3 dgYFQo')
     img = soup.find_all('img', class_='ImageBackground-sc-7hy03b-1 kCvqAF')
