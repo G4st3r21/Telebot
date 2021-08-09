@@ -7,11 +7,13 @@ from aiogram.types import ReplyKeyboardRemove, \
 button_hi = KeyboardButton('Привет')
 button_weather = KeyboardButton('Погода')
 button_news = KeyboardButton('Новости')
+button_films = KeyboardButton('Кино')
 
 greet_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 greet_kb.add(button_hi)
 greet_kb.add(button_weather)
 greet_kb.add(button_news)
+greet_kb.add(button_films)
 
 
 # MAILING

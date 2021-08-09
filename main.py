@@ -1,9 +1,11 @@
+from asyncio import events
 from google.api_core.gapic_v1 import config
 from data.config import token, founder_id
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from data.Meduza_API import NewsFromMeduza
 from data.weather_API import WeatherCheck
+from data.Event_parser import Afisha_ru_films
 from data.dialog_module import AI_chatting
 from data.db import UsersTable, ReminderTable
 from data import Sticers as sticers
@@ -97,6 +99,11 @@ async def newsNow(msg: aiogram.types.Message):
     data = NewsFromMeduza(7)
     await bot.send_message(msg.from_user.id, '\n\n'.join(data), parse_mode='HTML')
 
+@dp.message_handler(commands=['events'])
+async def eventsNow(msg: aiogram.types.Message):
+    data = Afisha_ru_films()
+    await bot.send_message(msg.from_user.id, data)
+
 # async def ReminderON():
 #     while True:
 #         asyncio.wait_for(1)
@@ -146,8 +153,10 @@ async def text_comands(msg: aiogram.types.Message):
         await newsNow(msg)
     elif text == 'привет':
         await start_message(msg)
-    elif text == 'рассылка':
-        await dayly_mailing()
+    # elif text == 'рассылка':
+    #     await dayly_mailing()
+    elif text == 'кино':
+        await eventsNow(msg)
     elif text == 'логи':
         if msg.from_user.id == founder_id:
             with open('logs.txt', 'r', encoding='utf-8') as file:
